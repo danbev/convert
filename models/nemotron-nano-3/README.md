@@ -22,6 +22,7 @@ llama serve -hf __owner__/Nemotron-Nano-3-30B-A3B-GGUF
 ### TODOs
 
 - add info
+- add MTP
 
 > [!IMPORTANT]
 > This model is automatically converted using https://github.com/ggml-org/convert
