@@ -12,7 +12,7 @@ on:
 
 jobs:
   convert:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
