@@ -6,7 +6,7 @@ Automated pipeline for converting models to GGUF format and uploading them to HF
 
 Supported models: [models/](models/)
 
-Sample convert models using this pipeline:
+Sample models converted with this pipeline:
 
 - https://huggingface.co/ggml-org/gemma-4-31B-it-GGUF
 - https://huggingface.co/ggml-org/Qwen3.6-35B-A3B-GGUF
