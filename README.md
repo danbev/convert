@@ -6,6 +6,12 @@ Automated pipeline for converting models to GGUF format and uploading them to HF
 
 Supported models: [models/](models/)
 
+Sample convert models using this pipeline:
+
+- https://huggingface.co/ggml-org/gemma-4-31B-it-GGUF
+- https://huggingface.co/ggml-org/Qwen3.6-35B-A3B-GGUF
+- https://huggingface.co/ggml-org/gpt-oss-20b-GGUF
+
 ## Usage
 
 Requires `HF_TOKEN` with write permission to the target org.
@@ -27,6 +33,7 @@ bash hf-job.sh --owner <org>
 ## Notes
 
 - Models are converted only if at least one of the source models has been updated
+- The README.md files are always updated, regardless if the source models have been updated
 - All models in [ggml-org](https://huggingface.co/ggml-org) are auto-converted by a [GitHub Actions workflow](https://github.com/ggml-org/convert/actions/workflows/main.yml) once per week
   
   ```bash
