@@ -1,6 +1,6 @@
 ---
 license: other
-pipeline_tag: text-generation
+pipeline_tag: any-to-any
 tags:
 - gguf
 - quantized
