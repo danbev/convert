@@ -8,12 +8,12 @@ base_model:
 - nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-BF16
 ---
 
-# Nemotron-3-Nano-Omni-30B-A3B-Reasoning-BF16
+# NVIDIA-Nemotron-3-Nano-Omni-30B-A3B-Reasoning-BF16
 
 Run with https://llama.app
 
 ```bash
-llama serve -hf __owner__/nemotron-3-nano-omni3-30B-A3B-GGUF
+llama serve -hf __owner__/NVIDIA-Nemotron-3-Nano-Omni-30B-A3B-GGUF
 ```
 
 ### Source models

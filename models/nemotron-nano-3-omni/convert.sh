@@ -4,7 +4,7 @@ set -euox pipefail
 OUTPUT_DIR="$1"
 LLAMA_CPP="$2"
 
-DISPLAY_NAME="Nemotron-3-Nano-Omni-30B-A3B"
+DISPLAY_NAME="NVIDIA-Nemotron-3-Nano-Omni-30B-A3B"
 QUANTIZE="$LLAMA_CPP/build/bin/llama-quantize"
 
 # --- Conversions ---
