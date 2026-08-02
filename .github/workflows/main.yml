@@ -47,6 +47,9 @@ jobs:
           if [ "${{ github.event.inputs.force }}" = "true" ]; then
             FORCE_ARGS="--force"
           fi
+          HARDWARE_ARGS=""
+          if [ -n "${{ github.event.inputs.hardware }}" ]; then
+            HARDWARE_ARGS="--hardware ${{ github.event.inputs.hardware }}"
+          fi
           BRANCH_ARGS="--branch ${{ github.ref_name }}"
-          HARDWARE_ARGS="--hardware ${{ github.event.inputs.hardware }}"
-          bash hf-job.sh --owner ggml-org $FILTER_ARGS $FORCE_ARGS $BRANCH_ARGS $HARDWARE_ARGS
+          bash hf-job.sh --owner ggml-org $FILTER_ARGS $FORCE_ARGS $HARDWARE_ARGS $BRANCH_ARGS
