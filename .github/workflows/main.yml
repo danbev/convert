@@ -5,15 +5,15 @@ on:
     - cron: "0 0 * * 0" # Every Sunday at midnight
   workflow_dispatch:
     inputs:
-      filter:
-        description: "Model filter (regex)"
-        required: false
-        default: ""
       force:
         description: "Force re-convert (ignore SHA checks)"
         required: false
         default: false
-        type: boolean
+        type: boolean    
+      filter:
+        description: "Model filter (regex)"
+        required: false
+        default: ""
       hardware:
         description: "HF Jobs flavor"
         required: false
