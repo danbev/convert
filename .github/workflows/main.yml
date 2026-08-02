@@ -15,9 +15,9 @@ on:
         default: false
         type: boolean
       hardware:
-        description: "HF Jobs flavor (e.g. cpu-xl, cpu-basic, gpu-small)"
+        description: "HF Jobs flavor"
         required: false
-        default: "cpu-xl"
+        default: ""
 
 jobs:
   convert:

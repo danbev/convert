@@ -10,7 +10,7 @@ echo ">>> Starting HF Job: Model Convert & Quantize"
 OWNER=""
 BRANCH=""
 TIMEOUT="1h"
-HARDWARE="cpu-xl"
+HARDWARE="cpu-performance"
 CONVERT_ARGS=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
