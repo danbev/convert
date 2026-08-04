@@ -19,8 +19,10 @@ llama serve -hf __owner__/DeepSeek-V4-Flash-GGUF
 ### Source models
 - https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash
 
-### TODOs
+### Notes
+- Currently, the Q2 models do not use an imatrix calibration due to lack of one.
 
+### TODOs
 - add info
 
 > [!IMPORTANT]
