@@ -44,7 +44,7 @@ bash hf-job.sh --owner <org> --hardware cpu-basic
 - Models are converted only if at least one of the source models has been updated
 - The README.md files are always updated, regardless if the source models have been updated
 - All models in [ggml-org](https://huggingface.co/ggml-org) are auto-converted by a [GitHub Actions workflow](https://github.com/ggml-org/convert/actions/workflows/main.yml) once per week
-  
+
   ```bash
   HF_TOKEN=xxx bash hf-job.sh --owner ggml-org
   ```
