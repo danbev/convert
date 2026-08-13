@@ -9,6 +9,7 @@ OWNER=""
 ONE_MODEL=""
 FILTER_REGEX=""
 FORCE=false
+KEEP=false
 LLAMA_COMMIT=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -26,6 +27,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --force)
             FORCE=true
+            shift
+            ;;
+        --keep)
+            KEEP=true
             shift
             ;;
         --llama-commit)
@@ -184,17 +189,23 @@ for config_path in "${config_paths[@]}"; do
 
     if [ "$needs_convert" = false ]; then
         echo ">>> No dependency changes detected. Uploading README only."
-        rm -rf "$upload_dir"
+        if [ "$KEEP" = false ]; then
+            rm -rf "$upload_dir"
+        fi
         mkdir -p "$upload_dir"
         sed "s/__owner__/$OWNER/g" "$script_dir/README.md" > "$upload_dir/README.md"
         hf repos create "$dest" --type model --exist-ok
         hf upload "$dest" "$upload_dir" --include "README.md" --type model
-        rm -rf "$upload_dir"
+        if [ "$KEEP" = false ]; then
+            rm -rf "$upload_dir"
+        fi
         continue
     fi
 
     # Download all dependencies
-    rm -rf "$upload_dir"
+    if [ "$KEEP" = false ]; then
+        rm -rf "$upload_dir"
+    fi
     mkdir -p "$upload_dir"
     sed "s/__owner__/$OWNER/g" "$script_dir/README.md" > "$upload_dir/README.md"
 
@@ -238,10 +249,12 @@ for config_path in "${config_paths[@]}"; do
 
     echo ">>> Uploaded to https://huggingface.co/$dest"
 
-    rm -rf "$upload_dir"
-    for dir in "${temp_dirs[@]}"; do
-        rm -rf "$dir"
-    done
+    if [ "$KEEP" = false ]; then
+        rm -rf "$upload_dir"
+        for dir in "${temp_dirs[@]}"; do
+            rm -rf "$dir"
+        done
+    fi
     for key in $dep_keys; do
         unset "PATH_$key"
     done

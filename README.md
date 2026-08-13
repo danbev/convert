@@ -29,6 +29,9 @@ bash convert.sh --owner <org> --filter '^gemma'
 # Force re-convert (ignore SHA checks)
 bash convert.sh --owner <org> --force
 
+# Keep downloaded models and generated upload directories
+bash convert.sh --owner <org> --keep
+
 # Use a specific llama.cpp commit
 bash convert.sh --owner <org> --llama-commit <commit>
 
