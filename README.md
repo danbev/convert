@@ -32,6 +32,9 @@ bash convert.sh --owner <org> --force
 # Keep downloaded models and generated upload directories
 bash convert.sh --owner <org> --keep
 
+# Keep downloaded models and generated upload directories, but don't upload
+bash convert.sh --owner <org> --keep --no-upload
+
 # Use a specific llama.cpp commit
 bash convert.sh --owner <org> --llama-commit <commit>
 
