@@ -9,7 +9,7 @@ echo ">>> Starting HF Job: Model Convert & Quantize"
 # Collect arguments to pass to convert.sh
 OWNER=""
 BRANCH=""
-TIMEOUT="1h"
+TIMEOUT="2h"
 HARDWARE="cpu-performance"
 CONVERT_ARGS=""
 while [[ $# -gt 0 ]]; do
@@ -68,7 +68,6 @@ hf jobs run \
     --timeout "$TIMEOUT" \
     --flavor "$HARDWARE" \
     --secrets HF_TOKEN \
-    --env HF_HUB_ENABLE_HF_XET=1 \
     python:3.11-slim \
     bash -c '
     set -euo pipefail

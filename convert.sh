@@ -69,6 +69,26 @@ set -x
 echo ">>> Installing HF CLI"
 pip install -r requirements.txt
 
+export HF_XET_HIGH_PERFORMANCE="${HF_XET_HIGH_PERFORMANCE:-1}"
+
+# hf upload is resumable (re-run skips committed files, dedupes uploaded shards),
+# so retry transient failures like server-side read timeouts.
+hf_upload_with_retry() {
+    local attempts="${HF_UPLOAD_ATTEMPTS:-3}"
+    local attempt=1
+    while true; do
+        if "$@"; then
+            return 0
+        fi
+        if [ "$attempt" -ge "$attempts" ]; then
+            return 1
+        fi
+        echo ">>> hf upload failed (attempt $attempt/$attempts). Retrying in $((attempt * 10))s..."
+        sleep $((attempt * 10))
+        attempt=$((attempt + 1))
+    done
+}
+
 # Check HF_TOKEN has write access to owner
 if ! hf repos create "${OWNER}/__test-permissions" --type model --exist-ok 2>/dev/null; then
     echo "Error: HF_TOKEN does not have write access to '$OWNER'"
@@ -201,7 +221,7 @@ for config_path in "${config_paths[@]}"; do
         sed "s/__owner__/$OWNER/g" "$script_dir/README.md" > "$upload_dir/README.md"
         hf repos create "$dest" --type model --exist-ok
         if [ "$NO_UPLOAD" = false ]; then
-            hf upload "$dest" "$upload_dir" --include "README.md" --type model
+            hf_upload_with_retry hf upload "$dest" "$upload_dir" --include "README.md" --type model
         fi
         if [ "$KEEP" = false ]; then
             rm -rf "$upload_dir"
@@ -251,9 +271,24 @@ for config_path in "${config_paths[@]}"; do
     done <<< "$produced_files"
 
     if [ "$NO_UPLOAD" = false ]; then
-        hf upload "$dest" "$upload_dir" \
-            $gguf_flags --include ".src_sha" --include "README.md" --include "convert.log" \
-            --type model
+        if ! hf_upload_with_retry hf upload "$dest" "$upload_dir" $gguf_flags --include ".src_sha" --include "README.md" --include "convert.log" --type model; then
+            # fallback: one file per commit
+            echo ">>> Combined upload failed after retries. Falling back to per-file uploads."
+            upload_failed=false
+            while IFS= read -r file; do
+                [ -n "$file" ] || continue
+                echo ">>> Uploading $file (per-file fallback)"
+                hf_upload_with_retry hf upload "$dest" "$upload_dir/$file" --type model || upload_failed=true
+            done <<< "$produced_files"
+            for meta in .src_sha README.md convert.log; do
+                echo ">>> Uploading $meta (per-file fallback)"
+                hf_upload_with_retry hf upload "$dest" "$upload_dir/$meta" --type model || upload_failed=true
+            done
+            if [ "$upload_failed" = true ]; then
+                echo "Error: upload to $dest failed"
+                exit 1
+            fi
+        fi
         echo ">>> Uploaded to https://huggingface.co/$dest"
     fi
 
