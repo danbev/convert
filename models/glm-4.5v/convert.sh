@@ -10,7 +10,7 @@ QUANTIZE="$LLAMA_CPP/build/bin/llama-quantize"
 # --- Conversions ---
 
 # Main model (no MTP layers): BF16 (intermediate for quantization only)
-python3 "$LLAMA_CPP/convert_hf_to_gguf.py" "$PATH_PRIMARY" \
+python3 "$LLAMA_CPP/convert_hf_to_gguf.py" "$PATH_PRIMARY" --no-tensor-first-split \
     --outtype bf16 --outfile "$OUTPUT_DIR/${DISPLAY_NAME}-BF16.gguf" --no-mtp --model-name "$DISPLAY_NAME"
 
 # mmproj
@@ -32,8 +32,8 @@ FLAGS_Q4_K_M="--pure \
     "
 
 # Main model: Q8_0, Q4_K_M
-"$QUANTIZE"               "$OUTPUT_DIR/${DISPLAY_NAME}-BF16.gguf" "$OUTPUT_DIR/${DISPLAY_NAME}-Q8_0.gguf" Q8_0 1>&2
-"$QUANTIZE" $FLAGS_Q4_K_M "$OUTPUT_DIR/${DISPLAY_NAME}-BF16.gguf" "$OUTPUT_DIR/${DISPLAY_NAME}-Q4_K_M.gguf" Q4_K_M 1>&2
+"$QUANTIZE" --keep-split               "$OUTPUT_DIR/${DISPLAY_NAME}-BF16-00001-of-00002.gguf" "$OUTPUT_DIR/${DISPLAY_NAME}-Q8_0.gguf" Q8_0 1>&2
+"$QUANTIZE" --keep-split $FLAGS_Q4_K_M "$OUTPUT_DIR/${DISPLAY_NAME}-BF16-00001-of-00002.gguf" "$OUTPUT_DIR/${DISPLAY_NAME}-Q4_K_M.gguf" Q4_K_M 1>&2
 
 # MTP: Q8_0, Q4_0
 "$QUANTIZE"        "$OUTPUT_DIR/mtp-${DISPLAY_NAME}-BF16.gguf" "$OUTPUT_DIR/mtp-${DISPLAY_NAME}-Q8_0.gguf" Q8_0 1>&2
@@ -41,8 +41,10 @@ FLAGS_Q4_K_M="--pure \
 
 # --- Produced files ---
 
-echo "${DISPLAY_NAME}-Q8_0.gguf"       >> "$OUTPUT_DIR/.produced_files"
-echo "${DISPLAY_NAME}-Q4_K_M.gguf"     >> "$OUTPUT_DIR/.produced_files"
+echo "${DISPLAY_NAME}-Q8_0-00001-of-00002.gguf"   >> "$OUTPUT_DIR/.produced_files"
+echo "${DISPLAY_NAME}-Q8_0-00002-of-00002.gguf"   >> "$OUTPUT_DIR/.produced_files"
+echo "${DISPLAY_NAME}-Q4_K_M-00001-of-00002.gguf" >> "$OUTPUT_DIR/.produced_files"
+echo "${DISPLAY_NAME}-Q4_K_M-00002-of-00002.gguf" >> "$OUTPUT_DIR/.produced_files"
 echo "mmproj-${DISPLAY_NAME}-Q8_0.gguf" >> "$OUTPUT_DIR/.produced_files"
 echo "mtp-${DISPLAY_NAME}-Q8_0.gguf"   >> "$OUTPUT_DIR/.produced_files"
 echo "mtp-${DISPLAY_NAME}-Q4_0.gguf"   >> "$OUTPUT_DIR/.produced_files"
