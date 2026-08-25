@@ -69,8 +69,6 @@ set -x
 echo ">>> Installing HF CLI"
 pip install -r requirements.txt
 
-export HF_HUB_DISABLE_XET=1
-
 # Check HF_TOKEN has write access to owner
 if ! hf repos create "${OWNER}/__test-permissions" --type model --exist-ok 2>/dev/null; then
     echo "Error: HF_TOKEN does not have write access to '$OWNER'"
