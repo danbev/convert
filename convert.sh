@@ -12,6 +12,8 @@ FORCE=false
 KEEP=false
 NO_UPLOAD=false
 LLAMA_COMMIT=""
+LOCAL_MODEL=""
+LOCAL_LLAMA=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --owner)
@@ -42,6 +44,14 @@ while [[ $# -gt 0 ]]; do
             LLAMA_COMMIT="$2"
             shift 2
             ;;
+        --local-model)
+            LOCAL_MODEL="$2"
+            shift 2
+            ;;
+        --local-llama)
+            LOCAL_LLAMA="$2"
+            shift 2
+            ;;
         *)
             echo "Unknown argument: $1"
             exit 1
@@ -56,6 +66,16 @@ fi
 
 if [ -n "$ONE_MODEL" ] && [ -n "$FILTER_REGEX" ]; then
     echo "Error: --one and --filter are mutually exclusive"
+    exit 1
+fi
+
+if [ -n "$LOCAL_MODEL" ] && [ ! -d "$LOCAL_MODEL" ]; then
+    echo "Error: --local-model: no such directory: $LOCAL_MODEL"
+    exit 1
+fi
+
+if [ -n "$LOCAL_LLAMA" ] && [ ! -d "$LOCAL_LLAMA" ]; then
+    echo "Error: --local-llama: no such directory: $LOCAL_LLAMA"
     exit 1
 fi
 
@@ -127,8 +147,13 @@ else
     CPU_COUNT=4
 fi
 
+LLAMA_DIR="llama.cpp"
+
 echo ">>> Preparing llama.cpp"
-if [ -d "llama.cpp" ]; then
+if [ -n "$LOCAL_LLAMA" ]; then
+    LLAMA_DIR="$(cd "$LOCAL_LLAMA" && pwd)"
+    echo ">>> Using local llama.cpp: $LLAMA_DIR"
+elif [ -d "llama.cpp" ]; then
     echo ">>> llama.cpp already exists"
     if [ -n "$LLAMA_COMMIT" ]; then
         cd llama.cpp && git fetch --unshallow 2>/dev/null || git fetch --all && git checkout "$LLAMA_COMMIT" && cd ..
@@ -145,11 +170,9 @@ else
 fi
 
 echo ">>> Building llama-quantize"
-cd llama.cpp
-mkdir -p build && cd build
-cmake .. -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_UI=OFF
-make -j"$CPU_COUNT" llama-quantize
-cd ../..
+(cd "$LLAMA_DIR" && mkdir -p build && cd build && \
+    cmake .. -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_UI=OFF && \
+    make -j"$CPU_COUNT" llama-quantize)
 
 # Iterate over selected config(s)
 for config_path in "${config_paths[@]}"; do
@@ -240,6 +263,13 @@ for config_path in "${config_paths[@]}"; do
     for key in $dep_keys; do
         repo_var="DEP_$key"
         repo="${!repo_var}"
+
+        if [ -n "$LOCAL_MODEL" ]; then
+            echo ">>> Using local model for $key: $LOCAL_MODEL"
+            export "PATH_$key=$LOCAL_MODEL"
+            continue
+        fi
+
         temp_dir="./model-temp-${display//-/_}-${key}"
         temp_dirs+=("$temp_dir")
 
@@ -250,7 +280,7 @@ for config_path in "${config_paths[@]}"; do
     done
 
     echo ">>> Running conversion script: $script_dir/convert.sh"
-    bash "$script_dir/convert.sh" "$upload_dir" "./llama.cpp" 2>&1 | tee "$upload_dir/convert.log"
+    bash "$script_dir/convert.sh" "$upload_dir" "$LLAMA_DIR" 2>&1 | tee "$upload_dir/convert.log"
 
     # Read produced files from manifest
     if [ ! -f "$upload_dir/.produced_files" ]; then
