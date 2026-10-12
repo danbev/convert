@@ -9,12 +9,12 @@ base_model:
 - vllm-sr/d3-lite
 ---
 
-# d3-lite
+# vllm-d3-lite
 
 Run with https://llama.app
 
 ```bash
-llama serve -hf __owner__/d3-lite-GGUF
+llama serve -hf __owner__/vllm-d3-lite-GGUF
 ```
 
 This is a decision model, to be used via `/v1/systemone` API. See https://github.com/ggml-org/llama.cpp/pull/30383

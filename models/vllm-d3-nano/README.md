@@ -6,21 +6,21 @@ tags:
 - quantized
 - decision-model
 base_model:
-- vllm-sr/d3-flash
+- vllm-sr/d3-nano
 ---
 
-# d3-flash
+# vllm-d3-nano
 
 Run with https://llama.app
 
 ```bash
-llama serve -hf __owner__/d3-flash-GGUF
+llama serve -hf __owner__/vllm-d3-nano-GGUF
 ```
 
 This is a decision model, to be used via `/v1/systemone` API. See https://github.com/ggml-org/llama.cpp/pull/30383
 
 ### Source models
-- https://huggingface.co/vllm-sr/d3-flash
+- https://huggingface.co/vllm-sr/d3-nano
 
 > [!IMPORTANT]
 > This model is automatically converted using https://github.com/ggml-org/convert

@@ -4,7 +4,7 @@ set -euox pipefail
 OUTPUT_DIR="$1"
 LLAMA_CPP="$2"
 
-DISPLAY_NAME="d3-lite"
+DISPLAY_NAME="vllm-d3-nano"
 QUANTIZE="$LLAMA_CPP/build/bin/llama-quantize"
 
 # --- Conversions ---
