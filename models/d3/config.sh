@@ -1,0 +1,3 @@
+DISPLAY_NAME="d3"
+DEST_REPO="d3-GGUF"
+DEP_PRIMARY="vllm-sr/d3"
