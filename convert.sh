@@ -224,7 +224,7 @@ for config_path in "${config_paths[@]}"; do
             sha="local"
         else
             echo ">>> Checking for updates in $repo ($key)"
-            sha=$(python3 -c "import urllib.request, json, sys; print(json.load(urllib.request.urlopen('https://huggingface.co/api/models/' + sys.argv[1]))['sha'])" "$repo")
+            sha=$(python3 -c "import sys; from huggingface_hub import HfApi; print(HfApi().model_info(sys.argv[1]).sha)" "$repo")
 
             if [ -z "$sha" ]; then
                 echo "Error: Failed to retrieve model info from Hugging Face for $repo"
